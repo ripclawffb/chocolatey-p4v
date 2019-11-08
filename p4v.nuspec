@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>p4v</id>
+    <version>2019.2</version>
+    <packageSourceUrl>https://github.com/ripclawffb/chocolatey-p4v</packageSourceUrl>
+    <owners>Asif Shaikh</owners>
+    <title>P4V: Visual Client</title>
+    <authors>Perforce</authors>
+    <projectUrl>https://www.perforce.com/products/helix-core-apps/helix-visual-client-p4v</projectUrl>
+    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/p4v.png</iconUrl>-->
+    <copyright>2019</copyright>
+    <licenseUrl>https://www.perforce.com/terms-use</licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <docsUrl>https://www.perforce.com/manuals/p4v/Content/P4V/Home-p4v.html</docsUrl>
+    <tags>p4v perforce helix visual client admin</tags>
+    <summary>Helix Visual Client from Perforce boosts productivity</summary>
+    <description><![CDATA[Helix Visual Client (P4V) comes with Helix Core –– version control from Perforce.
+It allows developers to:
+
+* Easily customize their workspace.
+* Visualize the flow of change using Perforce Streams.
+* Initiate code reviews.
+* Submit files back into Helix Core.
+]]></description>
+    <releaseNotes>https://www.perforce.com/perforce/doc.current/user/p4vnotes.txt</releaseNotes>
+    </metadata>
+  <files>
+    <!-- this section controls what actually gets packaged into the Chocolatey package -->
+    <file src="tools\**" target="tools" />
+    <!--Building from Linux? You may need this instead: <file src="tools/**" target="tools" />-->
+  </files>
+</package>
