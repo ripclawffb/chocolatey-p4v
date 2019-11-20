@@ -6,11 +6,11 @@
     <version>2019.2</version>
     <packageSourceUrl>https://github.com/ripclawffb/chocolatey-p4v</packageSourceUrl>
     <owners>Asif Shaikh</owners>
-    <title>P4V: Visual Client</title>
+    <title>P4V: Helix Visual Client</title>
     <authors>Perforce</authors>
     <projectUrl>https://www.perforce.com/products/helix-core-apps/helix-visual-client-p4v</projectUrl>
-    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/p4v.png</iconUrl>-->
-    <copyright>2019</copyright>
+    <iconUrl>https://cdn.jsdelivr.net/gh/ripclawffb/chocolatey-p4v@master/p4v.png</iconUrl>
+    <copyright>Copyright © 2019 Perforce Software, Inc.</copyright>
     <licenseUrl>https://www.perforce.com/terms-use</licenseUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <docsUrl>https://www.perforce.com/manuals/p4v/Content/P4V/Home-p4v.html</docsUrl>

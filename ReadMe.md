@@ -1,4 +1,4 @@
-﻿# P4V Chocolatey Package
+﻿# P4V: Helix Visual Client Chocolatey Package
 
 Helix Visual Client from Perforce boosts productivity
 
