@@ -1,8 +1,6 @@
 version: '{build}'
 max_jobs: 1
 image: 
-  - Visual Studio 2013
-  - Visual Studio 2015
   - Visual Studio 2017
   - Visual Studio 2019
 # History plugin requires complete log
@@ -25,7 +23,7 @@ build_script:
   - ps: choco pack
 
 test_script:
-  - ps: choco install $Env:PACKAGE_NAME -s . -dvy
+  - ps: choco install $Env:PACKAGE_NAME --source="'.;https://chocolatey.org/api/v2'" -dvy
   - ps: choco uninstall -dvy $Env:PACKAGE_NAME
 
 notifications:

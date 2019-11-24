@@ -25,6 +25,9 @@ It allows developers to:
 * Submit files back into Helix Core.
 ]]></description>
     <releaseNotes>https://www.perforce.com/perforce/doc.current/user/p4vnotes.txt</releaseNotes>
+    <dependencies>
+      <dependency id="kb2999226"/>
+    </dependencies>
     </metadata>
   <files>
     <!-- this section controls what actually gets packaged into the Chocolatey package -->
