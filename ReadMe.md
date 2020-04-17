@@ -1,5 +1,7 @@
 ﻿# P4V: Helix Visual Client Chocolatey Package
 
+[![Build status](https://ci.appveyor.com/api/projects/status/y9v90ya0dnfeb3gl/branch/master?svg=true)](https://ci.appveyor.com/project/ripclawffb/chocolatey-p4v/branch/master)
+
 Helix Visual Client from Perforce boosts productivity
 
 Helix Visual Client (P4V) comes with Helix Core –– version control from Perforce. It allows developers to:
