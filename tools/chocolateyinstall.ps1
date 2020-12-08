@@ -1,5 +1,5 @@
 ﻿$packageName = 'p4v'
-$version = 'r20.2'
+$version = 'r20.3'
 $baseurl = "https://cdist2.perforce.com/perforce/$version"
 $url32 = "$baseurl/bin.ntx86/p4vinst.exe"
 $url64 = "$baseurl/bin.ntx64/p4vinst64.exe"
