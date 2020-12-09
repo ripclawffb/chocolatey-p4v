@@ -19,6 +19,7 @@ environment:
 install:
   - ps: 'Get-CimInstance win32_operatingsystem -Property Caption, OSArchitecture, Version | fl Caption, OSArchitecture, Version'
   - ps: $PSVersionTable
+  - ps: Set-Service wuauserv -StartupType Manual
   - git --version
 
 build_script:
