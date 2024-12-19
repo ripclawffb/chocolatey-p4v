@@ -1,9 +1,9 @@
 ﻿$packageName = 'p4v'
-$version = 'r24.3'
+$version = 'r24.4'
 $baseurl = "https://filehost.perforce.com/perforce/$version"
 $url = "$baseurl/bin.ntx64/p4vinst64.exe"
 # $checksum64 = ((Invoke-WebRequest "$baseurl/bin.ntx64/SHA256SUMS" -UseBasicParsing).RawContent.ToString().Split() | Select-String -Pattern 'p4vinst64.exe' -SimpleMatch -Context 1,0 ).ToString().Trim().Split()[0]
-$checksum64 = '92089afd6f9d688bebbb3d3483b6fda243d3ea40dcf5cd680ccecceb3faae6b7'
+$checksum64 = '3f68f61863209320387bc70b8972b1246ebf23e95872c3ab0928e77e67930e97'
 
 $packageArgs = @{
   packageName    = $packageName
