@@ -7,7 +7,7 @@
     This script is designed to run in a GitHub Actions workflow on a windows-latest runner.
     It discovers the latest Perforce P4V release, compares the SHA256 hash of p4vinst64.exe
     against the hash currently in chocolateyinstall.ps1, and if a change is detected, it
-    silently installs the new binary, extracts the full version via 'p4v.exe -V', and updates
+    silently installs the new binary, extracts the full version from PE metadata, and updates
     p4v.nuspec and tools/chocolateyinstall.ps1.
 
 .NOTES
@@ -164,12 +164,13 @@ function Install-P4VSilently {
 function Get-P4VVersion {
     <#
     .SYNOPSIS
-        Runs 'p4v.exe -V' to extract the full version string and converts it to
-        a Chocolatey-compatible version (e.g. 2025.4.2871449).
+        Reads the embedded file version metadata from p4v.exe to extract the
+        Chocolatey-compatible version (e.g. 2025.4.2871449).
     .NOTES
-        p4v.exe -V outputs something like:
-          Rev. P4V/NTX64/2025.4/2871449 (2025/05/20).
-        We want to extract "2025.4.2871449".
+        p4v.exe -V opens a GUI dialog, so we cannot capture its output on a
+        headless runner. Instead we read the PE metadata via VersionInfo which
+        contains the product version (e.g. "2025.4/2871449") without executing
+        the binary.
     #>
     # Search common install locations
     $searchPaths = @(
@@ -200,30 +201,33 @@ function Get-P4VVersion {
     }
 
     Write-Log "Found p4v.exe at: $p4vExe"
-    Write-Log "Running: & `"$p4vExe`" -V"
 
-    # p4v.exe -V prints version info then exits; capture all output
-    try {
-        $output = & $p4vExe -V 2>&1 | Out-String
+    # Read version from the executable's embedded PE metadata
+    $versionInfo = (Get-Item $p4vExe).VersionInfo
+    Write-Log "VersionInfo.ProductVersion : $($versionInfo.ProductVersion)"
+    Write-Log "VersionInfo.FileVersion    : $($versionInfo.FileVersion)"
+
+    $rawVersion = $versionInfo.ProductVersion
+    if (-not $rawVersion) {
+        $rawVersion = $versionInfo.FileVersion
     }
-    catch {
-        Write-Log "Failed to run p4v.exe -V: $_" -Level ERROR
+
+    if (-not $rawVersion) {
+        Write-Log "No version metadata found in p4v.exe." -Level ERROR
         return $null
     }
 
-    Write-Log "p4v.exe -V output:`n$output"
+    Write-Log "Raw version string: $rawVersion"
 
-    # Parse: "Rev. P4V/NTX64/2025.4/2871449"  →  "2025.4.2871449"
-    $match = $output | Select-String -Pattern 'P4V/\w+/(\d{4}\.\d+)/(\d+)'
+    # Expected format from PE metadata: "2025.4.288.6649"
+    $match = $rawVersion | Select-String -Pattern '(\d{4}\.\d+\.\d+\.\d+)'
     if ($match) {
-        $majorMinor = $match.Matches[0].Groups[1].Value   # e.g. 2025.4
-        $changelist = $match.Matches[0].Groups[2].Value    # e.g. 2871449
-        $version    = "$majorMinor.$changelist"             # e.g. 2025.4.2871449
+        $version = $match.Matches[0].Groups[1].Value   # e.g. 2025.4.288.6649
         Write-Log "Extracted version: $version"
         return $version
     }
 
-    Write-Log "Could not parse version from p4v.exe -V output." -Level ERROR
+    Write-Log "Could not parse version from metadata: '$rawVersion'" -Level ERROR
     return $null
 }
 
