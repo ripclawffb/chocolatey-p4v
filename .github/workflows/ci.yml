@@ -46,7 +46,33 @@ jobs:
         with:
           name: nupkg
 
+      - name: Check if version exists on Chocolatey
+        id: version-check
+        shell: pwsh
+        run: |
+          $pkg = Get-ChildItem -Filter *.nupkg | Select-Object -First 1
+          # Extract version from filename: p4v.2025.4.2886649.nupkg → 2025.4.2886649
+          $version = $pkg.BaseName -replace '^p4v\.', ''
+          Write-Host "Package version: $version"
+
+          $url = "https://community.chocolatey.org/api/v2/Packages()?`$filter=Id eq 'p4v' and Version eq '$version'"
+          Write-Host "Checking Chocolatey API: $url"
+          try {
+            $result = Invoke-RestMethod -Uri $url -UseBasicParsing
+            if ($result) {
+              Write-Host "Version $version already exists on Chocolatey. Skipping push."
+              "exists=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            } else {
+              Write-Host "Version $version not found on Chocolatey. Will push."
+              "exists=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+            }
+          } catch {
+            Write-Error "Could not query Chocolatey API: $_. Aborting to prevent duplicate push."
+            exit 1
+          }
+
       - name: Push to Chocolatey.org
+        if: steps.version-check.outputs.exists != 'true'
         shell: pwsh
         run: |
           $pkg = Get-ChildItem -Filter *.nupkg | Select-Object -First 1
