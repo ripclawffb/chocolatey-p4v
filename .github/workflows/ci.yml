@@ -1,0 +1,54 @@
+name: Build, Test & Push Chocolatey Package
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build & Test Package
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build package
+        shell: pwsh
+        run: choco pack
+
+      - name: Install package
+        shell: pwsh
+        run: choco install p4v --source="'.;https://chocolatey.org/api/v2'" -dvy
+
+      - name: Uninstall package
+        shell: pwsh
+        run: choco uninstall p4v -dvy
+
+      - name: Upload nupkg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkg
+          path: "*.nupkg"
+
+  push:
+    name: Push to Chocolatey
+    runs-on: windows-latest
+    needs: build-and-test
+
+    steps:
+      - name: Download nupkg artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nupkg
+
+      - name: Push to Chocolatey.org
+        shell: pwsh
+        run: |
+          $pkg = Get-ChildItem -Filter *.nupkg | Select-Object -First 1
+          Write-Host "Pushing $($pkg.Name) to Chocolatey.org..."
+          choco push $pkg.Name --source https://push.chocolatey.org/ --api-key ${{ secrets.CHOCO_API_KEY }}
