@@ -7,7 +7,7 @@
     This script is designed to run in a GitHub Actions workflow on a windows-latest runner.
     It discovers the latest Perforce P4V release, compares the SHA256 hash of p4vinst64.exe
     against the hash currently in chocolateyinstall.ps1, and if a change is detected, it
-    silently installs the new binary, extracts the full version via 'p4v.exe -C', and updates
+    silently installs the new binary, extracts the full version via 'p4v.exe -V', and updates
     p4v.nuspec and tools/chocolateyinstall.ps1.
 
 .NOTES
@@ -164,10 +164,10 @@ function Install-P4VSilently {
 function Get-P4VVersion {
     <#
     .SYNOPSIS
-        Runs 'p4v.exe -C' to extract the full version string and converts it to
+        Runs 'p4v.exe -V' to extract the full version string and converts it to
         a Chocolatey-compatible version (e.g. 2025.4.2871449).
     .NOTES
-        p4v.exe -C outputs something like:
+        p4v.exe -V outputs something like:
           Rev. P4V/NTX64/2025.4/2871449 (2025/05/20).
         We want to extract "2025.4.2871449".
     #>
@@ -200,18 +200,18 @@ function Get-P4VVersion {
     }
 
     Write-Log "Found p4v.exe at: $p4vExe"
-    Write-Log "Running: & `"$p4vExe`" -C"
+    Write-Log "Running: & `"$p4vExe`" -V"
 
-    # p4v.exe -C prints version info then exits; capture all output
+    # p4v.exe -V prints version info then exits; capture all output
     try {
-        $output = & $p4vExe -C 2>&1 | Out-String
+        $output = & $p4vExe -V 2>&1 | Out-String
     }
     catch {
-        Write-Log "Failed to run p4v.exe -C: $_" -Level ERROR
+        Write-Log "Failed to run p4v.exe -V: $_" -Level ERROR
         return $null
     }
 
-    Write-Log "p4v.exe -C output:`n$output"
+    Write-Log "p4v.exe -V output:`n$output"
 
     # Parse: "Rev. P4V/NTX64/2025.4/2871449"  →  "2025.4.2871449"
     $match = $output | Select-String -Pattern 'P4V/\w+/(\d{4}\.\d+)/(\d+)'
@@ -223,7 +223,7 @@ function Get-P4VVersion {
         return $version
     }
 
-    Write-Log "Could not parse version from p4v.exe -C output." -Level ERROR
+    Write-Log "Could not parse version from p4v.exe -V output." -Level ERROR
     return $null
 }
 
