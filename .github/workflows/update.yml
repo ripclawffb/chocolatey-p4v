@@ -1,0 +1,49 @@
+name: Auto-Update P4V Package
+
+on:
+  schedule:
+    # Run daily at 08:00 UTC
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  check-for-update:
+    name: Check for P4V Update
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run update script
+        id: update
+        shell: pwsh
+        run: .\.github\scripts\Update-ChocoPackage.ps1 -RepoRoot $env:GITHUB_WORKSPACE
+
+      - name: Create Pull Request
+        if: steps.update.outputs.updated == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: auto-update/p4v
+          delete-branch: true
+          commit-message: "Update P4V to ${{ steps.update.outputs.version }}"
+          title: "Update P4V to ${{ steps.update.outputs.version }}"
+          body: |
+            Automated update detected a new P4V build.
+
+            **New version:** `${{ steps.update.outputs.version }}`
+
+            ### Changes
+            - Updated SHA256 checksum in `tools/chocolateyinstall.ps1`
+            - Updated version in `p4v.nuspec`
+
+            ---
+            *This PR was created automatically by the [Auto-Update workflow](https://github.com/${{ github.repository }}/actions/workflows/update.yml).*
+          labels: |
+            automated
+            update
