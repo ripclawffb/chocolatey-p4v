@@ -220,9 +220,14 @@ function Get-P4VVersion {
     Write-Log "Raw version string: $rawVersion"
 
     # Expected format from PE metadata: "2025.4.288.6649"
-    $match = $rawVersion | Select-String -Pattern '(\d{4}\.\d+\.\d+\.\d+)'
+    # Chocolatey version format:         "2025.4.2886649" (last two segments concatenated)
+    $match = $rawVersion | Select-String -Pattern '(\d{4})\.(\d+)\.(\d+)\.(\d+)'
     if ($match) {
-        $version = $match.Matches[0].Groups[1].Value   # e.g. 2025.4.288.6649
+        $year  = $match.Matches[0].Groups[1].Value    # e.g. 2025
+        $minor = $match.Matches[0].Groups[2].Value    # e.g. 4
+        $part3 = $match.Matches[0].Groups[3].Value    # e.g. 288
+        $part4 = $match.Matches[0].Groups[4].Value    # e.g. 6649
+        $version = "$year.$minor.$part3$part4"         # e.g. 2025.4.2886649
         Write-Log "Extracted version: $version"
         return $version
     }
